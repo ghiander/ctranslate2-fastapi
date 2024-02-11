@@ -140,6 +140,8 @@ $ make run-docker
 > ...
 ```
 
+Note that the dockerised service will be listening on `http://0.0.0.0:8000` instead of `http://127.0.0.1:8000` since the Docker port mapping points to `0.0.0.0` by default.
+
 ### For developers
 A bunch of tests have been implemented in the `test/` folder using different methods. Please refer to the `makefile` to see how to run the tests individually.
 - `https://github.com/jncraton/languagemodels` implemented tests using `doctest`. Those were retained were appropriate and can be run sequentially in `test/test_doctest.py`.

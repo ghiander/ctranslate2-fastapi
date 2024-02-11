@@ -13,4 +13,4 @@ ENV PYTHONPATH "${PYTHONPATH}:/src"
 
 # Configure wrapper
 ENV LLM_ARTIFACT_DIR="/artifacts"
-CMD uvicorn --app-dir src main:app
+CMD uvicorn --app-dir src main:app --host 0.0.0.0
