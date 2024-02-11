@@ -1,0 +1,3 @@
+# Ignore artifacts when building the wrapper
+artifacts/*
+venv/*

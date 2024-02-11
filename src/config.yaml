@@ -1,0 +1,2 @@
+title: ctranslate2 FastAPI
+description: FastAPI wrapper based on a lite version of `github.com/jncraton/languagemodels`.

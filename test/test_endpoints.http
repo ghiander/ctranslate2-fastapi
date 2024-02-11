@@ -1,0 +1,30 @@
+@base-url = http://127.0.0.1:8000
+
+POST {{base-url}}/completions HTTP/1.1
+Content-Type: application/json
+
+{
+    "prompt": "What's the first name of the secret agent Bond?"
+}
+
+###
+
+POST {{base-url}}/chat/completions HTTP/1.1
+Content-Type: application/json
+
+{
+    "messages": [
+        {
+            "role": "system",
+            "content": "Respond like a helpful assistant."
+        },
+        {
+            "role": "user",
+            "content": "What's a nice reptile?"
+        }
+    ]
+}
+
+###
+
+GET {{base-url}}/docs HTTP/1.1
