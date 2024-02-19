@@ -7,6 +7,7 @@ from model import CompletionQuery, CompletionResponse, ChatQuery
 from helpers import prefill_response
 from helpers import clean_completion
 from helpers import make_message_and_content_str
+from helpers import serialize_messages
 
 
 app = FastAPI(title=config.get_app_title(),
@@ -36,10 +37,11 @@ async def completions(query: CompletionQuery):
 @app.post("/chat/completions")
 async def chat(query: ChatQuery):
     messages = query.messages
-    message_str, content_str = \
+    _, content_str = \
         make_message_and_content_str(messages)
-    completion = lm.chat(message_str,
-                         preloaded_artifacts=artifact_tup)
+    messages_dict = serialize_messages(messages)
+    completion = lm.chat_from_dict(messages_dict,
+                                   preloaded_artifacts=artifact_tup)
     completion = clean_completion(completion)
     response = prefill_response(content_str, completion)
     response["choices"] = [{

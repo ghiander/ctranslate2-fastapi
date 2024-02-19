@@ -3,6 +3,31 @@ import string
 import languagemodels as lm
 
 
+PRIMITIVES = (bool, str, int, float, type(None))
+
+
+def is_primitive_strict(obj):
+    """Strict primitive type check."""
+    return type(obj) in PRIMITIVES
+
+
+def serialize_messages(messages):
+    """Serialises a FastAPI dictionary
+    by converting model objects into
+    their corresponding values."""
+    messages_serial = list()
+    for m in messages:
+        message = dict()
+        for k, v in m.__dict__.items():
+            # If not serialisable, get the value attribute
+            if not is_primitive_strict(v):
+                message[k] = v._value_
+            else:
+                message[k] = v
+        messages_serial.append(message)
+    return messages_serial
+
+
 def _generate_random_id(N=10):
     """Generates a random alphanumeric
     string of N characters."""

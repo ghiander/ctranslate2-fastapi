@@ -170,9 +170,22 @@ def chat(prompt: str, preloaded_artifacts=None) -> str:
     ... # doctest: +ELLIPSIS
     '...5:00pm...'
     """
-
     messages = parse_chat(prompt)
+    return _chat_from_dict(messages, preloaded_artifacts)
 
+
+def chat_from_dict(messages: dict, preloaded_artifacts=None) -> str:
+    """Get new message from chat-optimized language model
+
+    This function is similar to chat() but requires the input
+    to be already structured as a dictionary so that string
+    parsing can be skipped.
+    """
+    return _chat_from_dict(messages, preloaded_artifacts)
+
+
+def _chat_from_dict(messages: dict, preloaded_artifacts=None):
+    """Business logic for chat() and chat_from_dict()"""
     # Suppress starts of all assistant messages to avoid repeat generation
     suppress = [
         "Assistant: " + m["content"].split(" ")[0]

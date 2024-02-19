@@ -3,6 +3,8 @@ import languagemodels as lm
 from tokenizers import Tokenizer
 from ctranslate2._ext import Translator
 from helpers import make_message_and_content_str
+from helpers import is_primitive_strict
+from helpers import serialize_messages
 from model import Role
 from model import RoleContentChat
 from utils import time_function
@@ -88,3 +90,23 @@ def test_chat_input_conversion():
     expected_message_str = "User: Foo\n\nSystem: Bar\n\nAssistant: "
     assert message_str == expected_message_str
     assert content_str == "Foo Bar"
+
+
+def test_is_primitive_strict_false():
+    assert is_primitive_strict(Role.USER) is False
+
+
+def test_is_primitive_strict_true():
+    assert is_primitive_strict("foo") is True
+
+
+def test_message_serialisation():
+    messages = [RoleContentChat(
+        role=Role.USER,
+        content="Foo"), RoleContentChat(
+            role=Role.SYSTEM,
+            content="Bar")]
+    messages_serial = serialize_messages(messages)
+    expected_serial = [{'role': 'user', 'content': 'Foo'},
+                       {'role': 'system', 'content': 'Bar'}]
+    assert messages_serial == expected_serial

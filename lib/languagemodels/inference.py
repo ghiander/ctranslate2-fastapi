@@ -211,7 +211,6 @@ def parse_chat(prompt):
         prompt = "System: " + prompt
 
     prompt = "\n\n" + prompt
-
     chunks = re.split(r"[\r\n]\s*(\w+):", prompt, flags=re.M)
     chunks = [m.strip() for m in chunks if m.strip()]
 
