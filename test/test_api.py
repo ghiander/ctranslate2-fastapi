@@ -79,3 +79,33 @@ def test_chat_chain():
     assert "usage" in res_json
     assert "id" in res_json
     assert "choices" in res_json
+
+
+def test_chat_invalid_tokens():
+    """Expecting a 400 status raised from
+    a InvalidTokenException."""
+    request = {
+        "messages": [
+            {
+                "role": "user",
+                "content": "^"
+            }
+        ]
+    }
+    response = client.post("/chat/completions", json=request)
+    assert response.status_code == 400
+
+
+def test_chat_max_tokens():
+    """Expecting a 400 status raised from
+    a MaxTokensException."""
+    request = {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Hi "*500
+            }
+        ]
+    }
+    response = client.post("/chat/completions", json=request)
+    assert response.status_code == 400

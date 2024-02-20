@@ -1,5 +1,6 @@
 {
     "name": "LaMini-Flan-T5-248M",
     "params": 248e6,
-    "quantization": "int8"
+    "quantization": "int8",
+    "max_tokens": 250
 }

@@ -19,6 +19,14 @@ class InferenceException(Exception):
     pass
 
 
+class MaxTokensException(Exception):
+    pass
+
+
+class InvalidTokenException(Exception):
+    pass
+
+
 def load_artifacts_into_memory(model_info):
     """Returns the preloaded tokenizer and model as a tuple."""
     artifact_dir = get_artifact_dir()
@@ -54,6 +62,17 @@ def generate(
         tokenizer = preloaded_artifacts[0]
         model = preloaded_artifacts[1]
 
+    # TODO: Implement rule-based conversion of unknown tokens
+    # Currently replacing backticks just because the model
+    # does not know how to process them
+    rule_dict = {
+        "`": "'"
+    }
+    for target, replacement in rule_dict.items():
+        for str_list in [instructions, suppress]:
+            for i in range(len(str_list)):
+                str_list[i] = str_list[i].replace(target, replacement)
+
     suppress = [tokenizer.encode(s, add_special_tokens=False).tokens
                 for s in suppress]
     fmt = model_info.get("prompt_fmt", "{instruction}")
@@ -62,16 +81,27 @@ def generate(
 
     outputs_ids = []
     prefix = tokenizer.encode(prefix, add_special_tokens=False).tokens
-    results = model.translate_batch(
-        [tokenizer.encode(p).tokens for p in prompts],
-        target_prefix=[prefix] * len(prompts),
-        repetition_penalty=repetition_penalty,
-        max_decoding_length=max_tokens,
-        sampling_temperature=temperature,
-        sampling_topk=topk,
-        suppress_sequences=suppress,
-        beam_size=1,
-    )
+    tokens = [tokenizer.encode(p).tokens for p in prompts]
+
+    len_tokens = len(tokens[0])
+    if len_tokens > max_tokens:
+        raise MaxTokensException("Input contains more tokens than allowed "
+                                 f"(got {len_tokens} tokens whilst "
+                                 f"{max_tokens} tokens is the limit)")
+
+    try:
+        results = model.translate_batch(
+            source=tokens,
+            target_prefix=[prefix] * len(prompts),
+            repetition_penalty=repetition_penalty,
+            max_decoding_length=max_tokens,
+            sampling_temperature=temperature,
+            sampling_topk=topk,
+            suppress_sequences=suppress,
+            beam_size=1,
+        )
+    except ValueError as e:
+        raise InvalidTokenException(e)
     outputs_tokens = [r.hypotheses[0] for r in results]
     for output in outputs_tokens:
         outputs_ids.append([tokenizer.token_to_id(t) for t in output])

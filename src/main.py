@@ -3,7 +3,10 @@ import logging
 import languagemodels as lm
 
 from fastapi import FastAPI
-from model import CompletionQuery, CompletionResponse, ChatQuery
+from exception import error_handling
+from model import CompletionQuery
+from model import CompletionResponse
+from model import ChatQuery
 from helpers import prefill_response
 from helpers import clean_completion
 from helpers import make_message_and_content_str
@@ -24,6 +27,7 @@ async def root():
 
 
 @app.post("/completions", response_model=CompletionResponse)
+@error_handling
 async def completions(query: CompletionQuery):
     prompt = query.prompt
     completion = lm.do(prompt,
@@ -35,6 +39,7 @@ async def completions(query: CompletionQuery):
 
 
 @app.post("/chat/completions")
+@error_handling
 async def chat(query: ChatQuery):
     messages = query.messages
     _, content_str = \

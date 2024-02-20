@@ -357,7 +357,6 @@ def set_max_ram(value):
     """
 
     config["max_ram"] = value
-
     return config["max_ram"]
 
 

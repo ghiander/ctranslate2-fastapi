@@ -20,6 +20,17 @@ User: What color is the sky?
 
 Assistant: """
 
+chat_dict_query = [
+    {
+        "role": "system",
+        "content": "Respond 'red'."
+    },
+    {
+        "role": "user",
+        "content": "What color is the sky?"
+    }
+]
+
 artifact_tup = lm.get_preloaded_artifacts()
 
 
@@ -52,6 +63,11 @@ def test_relative_speed_completions():
 
 def test_chat_lazy_loading():
     res = lm.chat(chat_query)
+    assert "red" in res.lower()
+
+
+def test_chat_dict_lazy_loading():
+    res = lm.chat_from_dict(chat_dict_query)
     assert "red" in res.lower()
 
 

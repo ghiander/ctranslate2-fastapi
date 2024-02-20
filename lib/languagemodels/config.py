@@ -83,7 +83,7 @@ class Config(dict):
 
     @staticmethod
     def validate_model(model_name):
-        return model_names[model_name]["name"]
+        return model_name
 
     @staticmethod
     def validate_device(device):
@@ -159,7 +159,7 @@ class Config(dict):
 
 # Load the bootstrap config for the model passed via env var
 models = [load_bootstrap_config()]
-model_names = {m["name"]: m for m in models}
+model_name = models[0]["name"]
 
 Config.schema = {
     "max_ram": ConfigItem(Config.convert_to_gb, 0.48),
@@ -169,10 +169,11 @@ Config.schema = {
 }
 
 
-# Map models to their config
-for name in model_names:
-    Config.schema["name"] = ConfigItem(Config.validate_model, name)
-    # Config.schema["name"] = name
+# Map model to its config
+Config.schema["name"] = ConfigItem(Config.validate_model, model_name)
+for k in models[0]:
+    if k in Config.schema:
+        Config.schema[k] = ConfigItem(Config.schema[k].initfn, models[0][k])
 
 config = Config()
 
