@@ -17,9 +17,8 @@ app = FastAPI(title=config.get_app_title(),
               description=config.get_app_description())
 artifact_tup = lm.get_preloaded_artifacts()
 model_name = lm.get_model_name()
-logger = logging.getLogger(__name__)
+logger = config.get_logger(__name__)
 logger.info(f"Loaded '{model_name}' model into memory")
-
 
 @app.get("/health")
 async def root():
@@ -29,6 +28,7 @@ async def root():
 @app.post("/completions", response_model=CompletionResponse)
 @error_handling
 async def completions(query: CompletionQuery):
+    logger.debug(query)
     prompt = query.prompt
     completion = lm.do(prompt,
                        preloaded_artifacts=artifact_tup)
@@ -41,6 +41,7 @@ async def completions(query: CompletionQuery):
 @app.post("/chat/completions")
 @error_handling
 async def chat(query: ChatQuery):
+    logger.debug(query)
     messages = query.messages
     _, content_str = \
         make_message_and_content_str(messages)

@@ -10,10 +10,10 @@ run-docker:
 	docker run --rm -p 8000:8000 --name ct2-model ct2-model
 
 run:
-	uvicorn --app-dir src main:app
+	uvicorn --app-dir src main:app --log-config=src/config.yaml
 
 run-dev:
-	uvicorn --app-dir src main:app --reload
+	uvicorn --app-dir src main:app --reload --log-config=src/config.yaml
 
 test:
 	python test/test_doctest.py
